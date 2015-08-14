@@ -343,13 +343,45 @@ A XML-RPC C<struct> becomes a Perl array reference.
 
 =head3 scalar
 
+There is unfortunately no way in Perl to know the type of a scalar value as
+we humans expect it. Perl has its own set of internal types, not exposed at
+language level, and some can overlap with others. The following heuristic
+is applied, in this order:
+
+=over
+
+=item *
+
+if the scalar is C<undef>, it is converted to a XML-RPC C<nil>;
+
+=item *
+
+if the scalar has the C<SVf_NOK> flag (NV, PVNV), it is assumed to be a
+float value, and converted to a XML-RPC C<double>;
+
+=item *
+
+if the scalar has the C<SVf_IOK> flag (IV, PVIV), it is assumed to be an
+integer, and converted to a XML-RPC C<int>;
+
+=item *
+
+otherwise, the scalar is assumed to be a string (PV); if it a string of
+Perl characters, it is first encoded to UTF-8 (this may change in the future
+if it appears to create more problems than it tries to solve); if control
+characters are detected, the value is encoded to Base64 and sent as a
+XML-PC C<base64>; otherwise, XML specific characters (C<&>, C<< < >>, C<< > >>)
+are protected and the value is sent as XML-RPC C<string>;
+
+=back
+
 =head3 array reference
 
-Array references are converted to C<array> structures.
+Array references are converted to XML-RPC C<array> structures.
 
 =head3 hash reference
 
-Hash references are converted to C<struct> structures.
+Hash references are converted to XML-RPC C<struct> structures.
 
 =head3 object
 
