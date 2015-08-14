@@ -564,11 +564,14 @@ with objects, making it less practical than a pure Perl structure.
 
 =item *
 
-L<RPC::XML>
+L<RPC::XML> -- Developped since a long time (2001-today).
+Very well documented.
 
 =item *
 
-L<XML::Compile::RPC>
+L<XML::Compile::RPC> -- Recent (2009-2013). Heavily object oriented,
+complex to use. Strangely documented. Completely RPC/HTTP oriented,
+client-side inly, can't be used for generic encoding/decoding.
 
 =item *
 
@@ -582,8 +585,9 @@ Decoding uses L<XML::TreePP>, and is therefore slow.
 
 =item *
 
-L<XMLRPC::Lite> -- Barely documented, based on L<SOAP::Lite> and therefore
-a bit heavy.
+L<XMLRPC::Lite> -- Barely documented, based on L<SOAP::Lite>, therefore
+very object oriented and more than a bit heavy. On the positive side, this
+allows you to override how the values are guessed.
 
 Encoding is slow and relies on regexps to detect scalar types.
 
