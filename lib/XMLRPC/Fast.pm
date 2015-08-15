@@ -10,7 +10,7 @@ use MIME::Base64;
 use XML::Parser;
 
 
-our $VERSION = "0.00";
+our $VERSION = "0.10";
 
 our @EXPORT = qw<
     decode_xmlrpc encode_xmlrpc
