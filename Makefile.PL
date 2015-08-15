@@ -17,6 +17,11 @@ WriteMakefile(
         'MIME::Base64'  => 0,
         'XML::Parser'   => 0,
     },
+    META_MERGE          => {
+        resources       => {
+            repository  => "https://github.com/maddingue/XMLRPC-Fast.git",
+        },
+    },
     PL_FILES            => {},
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'XMLRPC-Fast-*' },

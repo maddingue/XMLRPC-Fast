@@ -22,6 +22,14 @@ my $builder = Module::Build->new(
         'Storable'      => 0,
         'Test::More'    => '0.45',
     },
+    test_recommends => {
+        'Test::LongString'  => 0,
+    },
+    meta_merge => {
+        resources       => {
+            repository  => "https://github.com/maddingue/XMLRPC-Fast.git",
+        }
+    },
     add_to_cleanup      => [ 'XMLRPC-Fast-*' ],
 );
 
