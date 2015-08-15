@@ -87,7 +87,7 @@ my $update_infos = [
 ];
 
 my $msg = $update_infos;
-my $xml = Diabolo::XMLRPC_Serializer->envelope(method => @$msg);
+my $xml = XMLRPC::Serializer->envelope(method => @$msg);
 
 my $frpc2 = Frontier::RPC2->new;
 my $xrpc = XML::RPC->new("");
