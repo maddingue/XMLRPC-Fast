@@ -17,7 +17,8 @@ use XMLRPC::Fast::DecodeWith::XMLLibXML;
 use XMLRPC::Fast::DecodeWith::XMLTreePP;
 
 use lib "/home/voice/current/agi-bin";
-use Diabolo::XMLRPC_Lite;
+use constant
+    HAVE_DIABOLO_XMLRPC_LITE => eval "use Diabolo::XMLRPC_Lite; 1" // 0;
 
 
 my $ping = [ "client.ping" ];
@@ -118,12 +119,12 @@ my @tests = (
             my $rpc = XMLRPC::Deserializer->deserialize($xml)->root
         },
     },
-    {
+  ( {
         name => "Diabolo::XMLRPC_Lite",
         code => sub {
             my $rpc = Diabolo::XMLRPC_Deserializer->deserialize($xml)->root
         },
-    },
+    } ) x!! HAVE_DIABOLO_XMLRPC_LITE,
     {
         name => "XML::RPC",
         code => sub {
