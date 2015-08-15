@@ -186,6 +186,9 @@ sub decode_xmlrpc {
 }
 
 
+#
+# decode_node()
+# -----------
 sub decode_node {
     my ($node) = shift;
     my @result;
@@ -233,6 +236,10 @@ sub decode_node {
 
 __END__
 
+=pod
+
+=encoding UTF-8
+
 =head1 NAME
 
 XMLRPC::Fast - fast XML-RPC encoder/decoder
@@ -250,7 +257,7 @@ XMLRPC::Fast - fast XML-RPC encoder/decoder
 
 =head1 DESCRIPTION
 
-C<XMLRPC::Fast>, as its names suggests, tries to be a fast XML-RPC encoder
+C<XMLRPC::Fast>, as its name suggests, tries to be a fast XML-RPC encoder
 & decoder. Contrary to most other XML-RPC modules on the CPAN, it doesn't
 offer a RPC-oriented framework, and instead behaves more like a serialization
 module with a purely functional interface. The other main difference is
@@ -258,8 +265,8 @@ that, contrary to other XML-RPC modules, which all use regexps to detect
 scalar types, XMLRPC::Fast uses Perl's internal flags. See L<"MAPPING">
 for more details. This choice was made because there are many kinds of
 data which can defeat the regexps, and a string can be confused with an
-integer. This should DWIM most of the time, but it might not correspond
-to your own use cases.
+integer. This module should DWIM most of the time, but it might not
+correspond to your own use cases.
 
 
 =head1 RATIONALE
@@ -335,8 +342,8 @@ A XML-RPC C<nil> becomes the undefined value (C<undef>).
 
 =head3 string
 
-A XML-RPC C<string> becomes a Perl string value (PV). For compatibility
-reasons, the string is not decoded, and is therefore provided as octets.
+A XML-RPC C<string> becomes a Perl string value (PV). 
+The string is not decoded, and is therefore provided as octets.
 
 =head3 struct
 
@@ -374,8 +381,8 @@ otherwise, the scalar is assumed to be a string (PV); if it a string of
 Perl characters, it is first encoded to UTF-8 (this may change in the future
 if it appears to create more problems than it tries to solve); if control
 characters are detected, the value is encoded to Base64 and sent as a
-XML-PC C<base64>; otherwise, XML specific characters (C<&>, C<< < >>, C<< > >>)
-are protected and the value is sent as XML-RPC C<string>;
+XML-RPC C<base64>; otherwise, XML specific characters (C<&>, C<< < >>, C<< > >>)
+are protected and the value is sent as a XML-RPC C<string>.
 
 =back
 
@@ -446,15 +453,27 @@ Examples:
     # parsing a response message
     my $xml = <<'XML';
     <?xml version="1.0" encoding="UTF-8"?>
+    <methodResponse>
+      <params>
+        <param>
+          <value>
+            <struct>
+              <member>
+                <name>angel.alert</name>
+                <value> <string>missing Fluttershy</string> </value>
+              </member>
+            </struct>
+          </value>
+        </param>
+      </params>
+    </methodResponse>
     XML
 
     my $rpc = decode_xmlrpc($xml);
 
     # $rpc = {
     #     type  => "response",
-    #     
-    #     
-    #     
+    #     params => [{ "angel.alert" => "missing Fluttershy" }],
     # }
 
 
@@ -492,10 +511,26 @@ Examples:
 =head2 encode_xmlrpc
 
 Create a XML-RPC method message and return the corresponding XML document.
+Type is C<"method"> for a request message, C<"response"> for a normal response
+message, C<"fault"> for a fault response message. Method name is only used
+for request messages.
 
 Arguments: type of message, method name, parameters
 
 Return: XML octets
+
+Examples:
+
+    # create a request message
+    my $xml = encode_xmlrpc(request =>
+        "fluttergency.set_level", { level => 3 });
+
+    # create a normal response message
+    my $xml = encode_xmlrpc(response => "",
+        {"angel.alert" => "missing Fluttershy"});
+
+    # create a fault response message
+    my $xml = encode_xmlrpc(fault => 20, "it needs to be 20% cooler");
 
 
 =head2 encode_xmlrpc_request
@@ -508,6 +543,27 @@ Arguments: method name, parameters
 
 Return: XML octets
 
+Example:
+
+    my $xml = encode_xmlrpc_request("fluttergency.set_level", { level => 3 });
+
+    # <?xml version="1.0" encoding="UTF-8"?>
+    # <methodCall>
+    #   <methodName>fluttergency.set_level</methodName>
+    #   <params>
+    #     <param>
+    #       <value>
+    #         <struct>
+    #           <member>
+    #             <name>level</name>
+    #             <value> <int>3</int> </value>
+    #           </member>
+    #         </struct>
+    #       </value>
+    #     </param>
+    #   </params>
+    # </methodCall>
+
 
 =head2 encode_xmlrpc_response
 
@@ -518,6 +574,26 @@ of the arguments.
 Arguments: parameters
 
 Return: XML octets
+
+Example:
+
+    my $xml = encode_xmlrpc_response({"angel.alert" => "missing Fluttershy"});
+
+    # <?xml version="1.0" encoding="UTF-8"?>
+    # <methodResponse>
+    #   <params>
+    #     <param>
+    #       <value>
+    #         <struct>
+    #           <member>
+    #             <name>angel.alert</name>
+    #             <value> <string>missing Fluttershy</string> </value>
+    #           </member>
+    #         </struct>
+    #       </value>
+    #     </param>
+    #   </params>
+    # </methodResponse>
 
 
 =head2 encode_xmlrpc_fault
@@ -557,18 +633,18 @@ Example:
 
 This section describes the author's impressions about the other XML-RPC
 modules available on the CPAN. You can find scripts to runs bench tests,
-with both L<Benchmark> and L<Dumbbench>, in the F<tool/> directory of the
+with both L<Benchmark> and L<Dumbbench>, in the F<tools/> directory of the
 distribution.
 
 =over
 
 =item *
 
-L<Frontier::RPC2> -- As I understand it, the grandfather of all XML-RPC
+L<Frontier::RPC2> -- As I understand it, the grandparent of all XML-RPC
 modules on the CPAN, made by the people who proposed the XML-RPC spec in
 the first place, back in 1998. Very old (last release in 2002 or 2004).
 Documented. Very fast; actually the fastest XML-RPC module on the CPAN
-before C<XMLRPC::Fast>, and still is for decoding.
+until C<XMLRPC::Fast>, and still is for decoding.
 
 Encoding is very fast, but relies on regexps to detect scalar types.
 
@@ -596,7 +672,7 @@ Decoding is pretty fast, using either L<XML::Parser> or L<XML::LibXML>.
 
 L<XML::Compile::RPC> -- Recent (2009-2013). Heavily object oriented,
 complex to use. Strangely documented. Completely RPC/HTTP oriented,
-client-side inly, can't be used for generic encoding/decoding.
+client-side only, can't be used for generic encoding/decoding.
 
 Encoding is slow, and a bit tedious given the complex structure you
 need to give it in order to specify everything.
@@ -630,6 +706,9 @@ Decoding is quite slow.
     my $rpc = XMLRPC::Deserializer->deserialize($xml)->root;
 
 =back
+
+If C<XMLRPC::Fast> doesn't fit your needs, L<RPC::XML> is probably
+your best bet.
 
 
 =head1 CREDITS
