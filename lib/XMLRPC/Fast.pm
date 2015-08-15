@@ -349,7 +349,7 @@ A XML-RPC C<struct> becomes a Perl array reference.
 
 There is unfortunately no way in Perl to know the type of a scalar value as
 we humans expect it. Perl has its own set of internal types, not exposed at
-language level, and some can overlap with others. The following heuristic
+language level, and some can overlap with others. The following heuristic(*)
 is applied, in this order:
 
 =over
@@ -378,6 +378,10 @@ XML-PC C<base64>; otherwise, XML specific characters (C<&>, C<< < >>, C<< > >>)
 are protected and the value is sent as XML-RPC C<string>;
 
 =back
+
+(*) To quote Mark Jason Dominus, "this is a fancy way of saying that it
+doesn't work," yet my guess (and experience) is that this one is less
+buggy at guessing types than regexps. Obviously, your mileage may vary.
 
 =head3 array reference
 
