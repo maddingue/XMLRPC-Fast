@@ -28,7 +28,7 @@ my $update_infos = [
     "client.update_interface", {
         agent_id => 12345,
         availability_code => "",
-        hostname => "dev01.voice.dabcnet.cpt",
+        hostname => "dev01.dev.company.com",
         in_conference => "N",
         in_listen => "N",
         in_whisper => "N",
