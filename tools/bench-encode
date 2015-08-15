@@ -7,8 +7,8 @@ use Benchmark   qw< timethese cmpthese >;
 use Dumbbench;
 use Frontier::RPC2;
 use RPC::XML;
-use XML::Compile::RPC::Client;
-use XML::Compile::RPC::Util;
+#use XML::Compile::RPC::Client;
+#use XML::Compile::RPC::Util;
 use XML::RPC;
 use XMLRPC::Lite;
 
@@ -131,16 +131,19 @@ my @tests = (
             my $xml = $frpc2->encode_call(@$msg);
         },
     },
-    {
-        name => "XML::Compile::RPC",
-        code => sub {
-            # note: the generated XML-RPC actually is incorrect, given
-            # every value is considered as string
-            my $xml = $rpcclient->_callmsg(
-                $msg->[0], struct_from_hash(string => $msg->[1])
-            );
-        },
-    },
+    # XML::Compile::RPC need a complex structure to specify each and every
+    # type of values; even for a midly complex one like $update_infos, this
+    # makes it quite tedious; not worth the effort given how slow it is
+   #{
+   #    name => "XML::Compile::RPC",
+   #    code => sub {
+   #        # note: the generated XML-RPC actually is incorrect, given
+   #        # every value is considered as string
+   #        my $xml = $rpcclient->_callmsg(
+   #            $msg->[0], struct_from_hash(string => $msg->[1])
+   #        );
+   #    },
+   #},
 );
 
 
