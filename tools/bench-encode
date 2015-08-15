@@ -7,6 +7,8 @@ use Benchmark   qw< timethese cmpthese >;
 use Dumbbench;
 use Frontier::RPC2;
 use RPC::XML;
+use XML::Compile::RPC::Client;
+use XML::Compile::RPC::Util;
 use XML::RPC;
 use XMLRPC::Lite;
 
@@ -86,6 +88,9 @@ my $msg = $update_infos;
 
 my $frpc2 = Frontier::RPC2->new;
 my $xrpc = XML::RPC->new("");
+my $rpcclient = XML::Compile::RPC::Client->new(
+    destination => "none",
+);
 
 
 my @tests = (
@@ -123,6 +128,16 @@ my @tests = (
         name => "Frontier::RPC2",
         code => sub {
             my $xml = $frpc2->encode_call(@$msg);
+        },
+    },
+    {
+        name => "XML::Compile::RPC",
+        code => sub {
+            # note: the generated XML-RPC actually is incorrect, given
+            # every value is considered as string
+            my $xml = $rpcclient->_callmsg(
+                $msg->[0], struct_from_hash(string => $msg->[1])
+            );
         },
     },
 );
