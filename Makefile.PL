@@ -1,0 +1,24 @@
+#!perl
+use strict;
+use warnings;
+use ExtUtils::MakeMaker;
+
+
+WriteMakefile(
+    NAME                => 'XMLRPC::Fast',
+    LICENSE             => 'gpl',
+    AUTHOR              => 'Sebastien Aperghis-Tramoni <sebastien@aperghis.net>',
+    VERSION_FROM        => 'lib/XMLRPC/Fast.pm',
+    ABSTRACT_FROM       => 'lib/XMLRPC/Fast.pm',
+    PREREQ_PM => {
+        'B'             => 0,
+        'Encode'        => 0,
+        'Exporter'      => 0,
+        'MIME::Base64'  => 0,
+        'XML::Parser'   => 0,
+    },
+    PL_FILES            => {},
+    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean               => { FILES => 'XMLRPC-Fast-*' },
+);
+
