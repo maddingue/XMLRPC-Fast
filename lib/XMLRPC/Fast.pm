@@ -253,9 +253,13 @@ XMLRPC::Fast - fast XML-RPC encoder/decoder
 C<XMLRPC::Fast>, as its names suggests, tries to be a fast XML-RPC encoder
 & decoder. Contrary to most other XML-RPC modules on the CPAN, it doesn't
 offer a RPC-oriented framework, and instead behaves more like a serialization
-module with a purely functional interface. In order to DWIM and keep things
-simple for the user, it doesn't relies on regexps to detect scalar types,
-and instead check Perl's internal flags. See L<"MAPPING"> for more details.
+module with a purely functional interface. The other main difference is
+that, contrary to other XML-RPC modules, which all use regexps to detect
+scalar types, XMLRPC::Fast uses Perl's internal flags. See L<"MAPPING">
+for more details. This choice was made because there are many kinds of
+data which can defeat the regexps, and a string can be confused with an
+integer. This should DWIM most of the time, but it might not correspond
+to your own use cases.
 
 
 =head1 RATIONALE
@@ -547,25 +551,42 @@ Example:
 
 =head1 SIMILAR MODULES
 
+This section describes the author's impressions about the other XML-RPC
+modules available on the CPAN. You can find scripts to runs bench tests,
+with both L<Benchmark> and L<Dumbbench>, in the F<tool/> directory of the
+distribution.
+
 =over
 
 =item *
 
 L<Frontier::RPC2> -- As I understand it, the grandfather of all XML-RPC
 modules on the CPAN, made by the people who proposed the XML-RPC spec in
-the first place, back in 1998. Very old (last release in 2002 or 2004),
-but still very fast. Documented.
+the first place, back in 1998. Very old (last release in 2002 or 2004).
+Documented. Very fast; actually the fastest XML-RPC module on the CPAN
+before C<XMLRPC::Fast>, and still is for decoding.
 
-Encoding is very fast, but doesn't handle very well some data because it
-relies on regexps to detect scalar types.
+Encoding is very fast, but relies on regexps to detect scalar types.
+
+    my $xml = Frontier::RPC2->new->encode_call(@message);
 
 Decoding is very fast, based on L<XML::Parser>, but returns a structure
 with objects, making it less practical than a pure Perl structure.
+
+    my $rpc = Frontier::RPC2->new->decode($xml);
 
 =item *
 
 L<RPC::XML> -- Developped since a long time (2001-today).
 Very well documented.
+
+Encoding is pretty fast, but relies on regexps to detect scalar types.
+
+    my $xml = RPC::XML::request->new(@message)->as_string;
+
+Decoding is pretty fast, using either L<XML::Parser> or L<XML::LibXML>.
+
+    my $rpc = RPC::XML::ParserFactory->new->parse($xml);
 
 =item *
 
@@ -573,15 +594,22 @@ L<XML::Compile::RPC> -- Recent (2009-2013). Heavily object oriented,
 complex to use. Strangely documented. Completely RPC/HTTP oriented,
 client-side inly, can't be used for generic encoding/decoding.
 
+Encoding is slow, and a bit tedious given the complex structure you
+need to give it in order to specify everything.
+
 =item *
 
-L<XML::RPC> -- Old (2008), basic documentation.
+L<XML::RPC> -- Old (2008), basic documentation. Does not handle the
+C<base64> type.
 
-Encoding relies on regexps to detect scalar types
+Encoding is slow and relies on regexps to detect scalar types
 
-Decoding uses L<XML::TreePP>, and is therefore slow.
+    my $xml = XML::RPC->new("")->create_call_xml(@message);
 
-* does not handle base64 type
+Decoding uses L<XML::TreePP>, and is therefore very slow.
+
+    my $client = XML::RPC->new("");
+    my ($method, @params) = $client->unparse_call($client->{tpp}->parse($xml));
 
 =item *
 
@@ -591,7 +619,11 @@ allows you to override how the values are guessed.
 
 Encoding is slow and relies on regexps to detect scalar types.
 
-Decoding is slow.
+    my $xml = XMLRPC::Serializer->envelope(method => @message);
+
+Decoding is quite slow.
+
+    my $rpc = XMLRPC::Deserializer->deserialize($xml)->root;
 
 =back
 
