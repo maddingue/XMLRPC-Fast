@@ -1,5 +1,7 @@
 Release history for XMLRPC::Fast
 
+  - Kwalitee: add license information, specify minimum Perl version
+
 0.10 / 2015.08.15 / SAPER
   - first release
 
