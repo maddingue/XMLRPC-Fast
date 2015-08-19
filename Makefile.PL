@@ -10,6 +10,7 @@ WriteMakefile(
     AUTHOR              => 'Sebastien Aperghis-Tramoni <sebastien@aperghis.net>',
     VERSION_FROM        => 'lib/XMLRPC/Fast.pm',
     ABSTRACT_FROM       => 'lib/XMLRPC/Fast.pm',
+    MIN_PERL_VERSION    => '5.10.0',
     PREREQ_PM => {
         'B'             => 0,
         'Encode'        => 0,

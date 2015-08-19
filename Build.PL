@@ -11,6 +11,7 @@ my $builder = Module::Build->new(
     dist_version_from   => 'lib/XMLRPC/Fast.pm',
 
     requires => {
+        perl            => '5.010000',
         'B'             => 0,
         'Encode'        => 0,
         'Exporter'      => 0,
