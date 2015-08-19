@@ -6,7 +6,7 @@ use Module::Build 0.4004;
 
 my $builder = Module::Build->new(
     module_name         => 'XMLRPC::Fast',
-    license             => 'gpl',
+    license             => 'perl',
     dist_author         => 'Sebastien Aperghis-Tramoni <sebastien@aperghis.net>',
     dist_version_from   => 'lib/XMLRPC/Fast.pm',
 

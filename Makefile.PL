@@ -6,7 +6,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     NAME                => 'XMLRPC::Fast',
-    LICENSE             => 'gpl',
+    LICENSE             => 'perl',
     AUTHOR              => 'Sebastien Aperghis-Tramoni <sebastien@aperghis.net>',
     VERSION_FROM        => 'lib/XMLRPC/Fast.pm',
     ABSTRACT_FROM       => 'lib/XMLRPC/Fast.pm',
