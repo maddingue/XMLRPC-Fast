@@ -28,11 +28,14 @@ my @modules;
 #    if eval "use XML::RPC; 1";
 
 push @modules, "XMLRPC::Lite"
-    if eval "use XMLRPC::Lite; 1";
+    if eval "use XMLRPC::Lite 0.712; 1";
 
 use lib "/home/voice/current/agi-bin";
 push @modules, "Diabolo::XMLRPC_Lite"
-    if eval "use Diabolo::XMLRPC_Lite; 1";
+    if eval "use XMLRPC::Lite 0.712; use Diabolo::XMLRPC_Lite; 1";
+
+plan skip_all => "no other XML-RPC module available to test against"
+    unless @modules;
 
 
 # Data::Dumper configuration
