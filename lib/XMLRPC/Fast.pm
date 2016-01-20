@@ -1,6 +1,5 @@
 package XMLRPC::Fast;
 
-use v5.10;
 use strict;
 use warnings;
 
@@ -60,8 +59,8 @@ sub encode_xmlrpc {
     $xml .= "<methodName>$method</methodName>" if $type eq "method";
 
     if ($type eq "fault") {
-        $args[0] //= "";
-        $args[1] //= "";
+        $args[0] = "" unless defined $args[0];
+        $args[1] = "" unless defined $args[1];
 
         $xml .= "<fault><value><struct><member><name>faultCode</name>"
               . "<value><int>$args[0]</int></value></member>"

@@ -165,12 +165,12 @@ plan tests => @cases * (3 + 8 * @modules);
 for my $case (@cases) {
     my $orig = dclone $case->[0];
     my $message = $case->[0];
-    my $name = $message->[1]{value} // "<undef>";
+    my $name = defined $message->[1]{value} ? $message->[1]{value} : "<undef>";
     $name = "$message->[1]{type}:$name";
     $name = encode("UTF-8", $name);
 
     # serialize to XML-RPC a struct with a Perl string
-    my $mine1 = eval { encode_request_with("XMLRPC::Fast", @$message) } // "";
+    my $mine1 = eval { encode_request_with("XMLRPC::Fast", @$message) } || "";
     is $@, "", "[$name] encoding with XMLRPC::Fast (before encode_utf8)";
     $mine1 =~ s/^.+\?>//; # remove PI (RPC::XML, XML::RPC)
 
@@ -178,7 +178,7 @@ for my $case (@cases) {
         if $message->[1]{type} eq "string";
 
     # serialize to XML-RPC a struct with an UTF-8 (octets) string
-    my $mine2 = eval { encode_request_with("XMLRPC::Fast", @$message) } // "";
+    my $mine2 = eval { encode_request_with("XMLRPC::Fast", @$message) } || "";
     is $@, "", "[$name] encoding with XMLRPC::Fast (after encode_utf8)";
     $mine2 =~ s/^.+\?>//; # remove PI (RPC::XML, XML::RPC)
 
@@ -186,7 +186,7 @@ for my $case (@cases) {
 
     for my $module (@modules) {
         # serialize with another XML-RPC module
-        my $rfrc = eval { encode_request_with($module, @$message) } // "";
+        my $rfrc = eval { encode_request_with($module, @$message) } || "";
         is $@, "", "[$name] encoding with $module";
         $rfrc =~ s/^.+\?>//; # remove PI (RPC::XML, XML::RPC)
         $rfrc =~ s/\n//g;    # remove newlines (Frontier::RPC2, XML::RPC)
@@ -201,10 +201,10 @@ for my $case (@cases) {
             is_string $mine1, $rfrc, "[$name] comparing with $module encoder";
         }
 
-        my $rpc1 = eval { decode_message_with($module, $mine1) } // {};
+        my $rpc1 = eval { decode_message_with($module, $mine1) } || {};
         is $@, "", "[$name] decoding mine1 with $module";
 
-        my $rpc2 = eval { decode_message_with($module, $mine2) } // {};
+        my $rpc2 = eval { decode_message_with($module, $mine2) } || {};
         is $@, "", "[$name] decoding mine2 with $module";
 
         $rpc1->{params}[0]{value} = decode("UTF-8", $rpc1->{params}[0]{value})
